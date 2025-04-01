@@ -8,9 +8,10 @@ def index(request):
     posts = Post.objects.all()
     form = CommentForm()
     context ={
-        'posts':posts,
+        'posts': posts,
         'form': form,
     }
+
     return render(request, 'index.html', context)
 
 
@@ -26,12 +27,12 @@ def create(request):
     else:
         form = PostForm()
 
-
     context = {
-        'form': form
+        'form': form,
     }
-
     return render(request, 'create.html', context)
+
+
 @login_required
 def comment_create(request, post_id):
     form = CommentForm(request.POST)
@@ -39,22 +40,21 @@ def comment_create(request, post_id):
     if form.is_valid():
         comment = form.save(commit=False)
         comment.user = request.user
-        comment.post_id = post_id 
+        comment.post_id = post_id
         comment.save()
         return redirect('posts:index')
-
 
 
 def like(request, post_id):
     user = request.user
     post = Post.objects.get(id=post_id)
 
-    # if post in user.like_posts.all(): // 좋아요를 누른상태
+    # if post in user.like_posts.all():
     if user in post.like_users.all():
         # user.like_posts.remove(post)
         post.like_users.remove(user)
     else:
-        # user.like_posts.add(post) 1번 유저와 1번 게스트를 연결시킴
+        # user.like_posts.add(post)
         post.like_users.add(user)
 
     return redirect('posts:index')
