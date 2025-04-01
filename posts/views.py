@@ -42,3 +42,19 @@ def comment_create(request, post_id):
         comment.post_id = post_id 
         comment.save()
         return redirect('posts:index')
+
+
+
+def like(request, post_id):
+    user = request.user
+    post = Post.objects.get(id=post_id)
+
+    # if post in user.like_posts.all(): // 좋아요를 누른상태
+    if user in post.like_users.all():
+        # user.like_posts.remove(post)
+        post.like_users.remove(user)
+    else:
+        # user.like_posts.add(post) 1번 유저와 1번 게스트를 연결시킴
+        post.like_users.add(user)
+
+    return redirect('posts:index')
