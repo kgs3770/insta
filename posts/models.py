@@ -12,8 +12,15 @@ class Post(models.Model):
         crop=['middle', 'center'],
         upload_to='image/%Y/%m'
     )
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, 
-    on_delete=models.CASCADE
+    # 작성자
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE
+    )
+    # 이 글에 좋아요 누른 사람
+    like_users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name='like_posts',
     )
 
 
