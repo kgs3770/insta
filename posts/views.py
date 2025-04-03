@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from .models import Post
 from .forms import PostForm, CommentForm
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 # Create your views here.
 def index(request):
@@ -63,11 +64,32 @@ def like(request, post_id):
 
 def feed(request):
     followings = request.user.followings.all()
+
     posts = Post.objects.filter(user__in=followings) # 내가 팔로우 하는 사람들이 작성한 게시물들
     form = CommentForm()
+
     context = {
         'posts': posts,
-        'form': form,
+        'form': form, 
     }
 
     return render(request, 'index.html', context)
+
+
+def like_async(request, id):
+    user = request.user
+    post = Post.objects.get(id=id)
+
+    if user in post.like_users.all():
+        post.like_users.remove(user)
+        status = False
+    else:
+        post.like_users.add(user)
+        status = True
+
+    context = {
+        'post_id': id,
+        'status': status,
+        'count': len(post.like_users.all())
+    }
+    return JsonResponse(context)
